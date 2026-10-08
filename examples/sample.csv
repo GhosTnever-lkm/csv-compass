@@ -1,0 +1,6 @@
+name,notes,amount
+Alice,"A sample row with, a comma",12.50
+Bob,"A note with
+a second line",-8.25
+Casey,  duplicate example  ,4
+Casey,duplicate example,4

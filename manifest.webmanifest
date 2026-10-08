@@ -1,0 +1,1 @@
+{"name":"CSV Compass","short_name":"CSV Compass","description":"Private CSV inspection and cleanup that runs locally in your browser.","start_url":"./","display":"standalone","background_color":"#101821","theme_color":"#111a25","icons":[{"src":"assets/compass.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]}

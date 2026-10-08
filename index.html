@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111a25">
+  <meta name="description" content="Inspect, understand, and clean CSV files privately in your browser. Your data never leaves your device.">
+  <title>CSV Compass — private data, clearer tables</title>
+  <link rel="icon" href="assets/compass.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="styles.css">
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#home" aria-label="CSV Compass home"><img src="assets/compass.svg" alt=""><span>csv<span class="brand-accent">compass</span></span></a>
+    <div class="top-actions"><span class="privacy-pill"><i></i> Files stay on your device</span><button id="themeButton" class="icon-button" type="button" aria-label="Toggle color theme" title="Toggle theme">◐</button></div>
+  </header>
+
+  <main>
+    <section id="home" class="hero">
+      <div class="hero-copy"><div class="eyebrow"><span class="eyebrow-mark">✳</span> PRIVATE BY DESIGN</div><h1>Make sense of<br><span>messy data.</span></h1><p>Explore, profile, and clean CSV files in a few clicks. Everything runs locally in your browser. Your spreadsheet never gets uploaded.</p><div class="hero-points"><span><b>01</b> Inspect</span><span><b>02</b> Clean</span><span><b>03</b> Export</span></div></div>
+      <div class="upload-card" id="dropZone" tabindex="0" role="button" aria-label="Choose a CSV file or drop one here">
+        <div class="upload-orbit"><div class="upload-icon">↥</div></div><h2>Bring your data in</h2><p>Drop a CSV file here, or choose one from your device.</p><button id="chooseButton" class="primary-button" type="button">Choose a CSV <span>↗</span></button><span class="file-note">CSV and TSV · up to 100 MB · stays local</span><input id="fileInput" type="file" accept=".csv,.tsv,text/csv,text/tab-separated-values" hidden>
+      </div>
+    </section>
+
+    <section id="workspace" class="workspace hidden" aria-live="polite">
+      <div class="workspace-head"><div><div class="eyebrow">YOUR WORKSPACE</div><h2 id="fileName">Untitled.csv</h2><p id="fileMeta" class="muted"></p></div><div class="workspace-actions"><button id="resetButton" class="secondary-button" type="button">New file</button><button id="exportButton" class="primary-button" type="button">Download cleaned CSV <span>↓</span></button></div></div>
+      <div class="stats-grid" id="stats"></div>
+      <div class="toolbar"><label class="search-box"><span>⌕</span><input id="searchInput" type="search" placeholder="Find in table…" aria-label="Find in table"></label><button id="cleanButton" class="secondary-button" type="button">✦ Quick clean</button><button id="duplicatesButton" class="secondary-button" type="button">Remove duplicates</button><button id="undoButton" class="secondary-button" type="button" disabled>↶ Undo</button><button id="formulaButton" class="toggle-button" type="button" aria-pressed="true"><span class="toggle-dot"></span> Protect formulas</button></div>
+      <div class="table-shell"><div class="table-scroll"><table id="dataTable"></table></div><div id="emptySearch" class="empty-state hidden">No rows match your search.</div></div>
+      <div class="table-footer"><span id="rowCount"></span><span><kbd>Esc</kbd> clear search</span></div>
+      <div id="toast" class="toast" role="status"></div>
+    </section>
+
+    <section class="how-it-works"><div class="section-heading"><div class="eyebrow">A CLEARER WAY TO WORK</div><h2>Your data stays yours.</h2><p>No account. No upload. No tracking. CSV Compass is a small, transparent workspace that works offline after you open it.</p></div><div class="feature-grid"><article class="feature-card"><div class="feature-icon coral">⌗</div><h3>See the shape</h3><p>Get a quick profile of columns, empty cells, duplicate rows, and file size before you start.</p></article><article class="feature-card"><div class="feature-icon blue">✦</div><h3>Clean with confidence</h3><p>Trim whitespace, normalize blank values, and remove duplicate rows. Undo your last change instantly.</p></article><article class="feature-card"><div class="feature-icon green">↧</div><h3>Take it with you</h3><p>Search the table, inspect any column, and export a clean CSV with formula-injection protection.</p></article></div></section>
+    <footer><a class="brand footer-brand" href="#home"><img src="assets/compass.svg" alt=""><span>csv<span class="brand-accent">compass</span></span></a><span>Open source · Offline-ready · Built for your privacy</span><a href="https://github.com/GhosTnever-lkm/csv-compass">Source code ↗</a></footer>
+  </main>
+</body>
+</html>
