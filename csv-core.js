@@ -1,22 +1,46 @@
 export function parseCSV(text, delim) {
-  const out = []; let row = [], cell = '', quoted = false;
+  const out = []; let row = [], cell = '', quoted = false, afterQuote = false, rowTouched = false;
   for (let i = 0; i < text.length; i++) {
     const c = text[i];
-    if (quoted) { if (c === '"' && text[i + 1] === '"') { cell += '"'; i++; } else if (c === '"') quoted = false; else cell += c; }
-    else if (c === '"' && cell === '') quoted = true;
-    else if (c === delim) { row.push(cell); cell = ''; }
-    else if (c === '\n' || c === '\r') { if (c === '\r' && text[i + 1] === '\n') i++; row.push(cell); out.push(row); row = []; cell = ''; }
-    else cell += c;
+    if (quoted) {
+      if (c === '"' && text[i + 1] === '"') { cell += '"'; i++; }
+      else if (c === '"') { quoted = false; afterQuote = true; }
+      else cell += c;
+      continue;
+    }
+    if (afterQuote && c !== delim && c !== '\n' && c !== '\r') {
+      throw new Error(`Malformed CSV: unexpected character after a closing quote at character ${i + 1}.`);
+    }
+    if (c === '"') {
+      if (cell !== '' || afterQuote) throw new Error(`Malformed CSV: quote inside an unquoted field at character ${i + 1}.`);
+      quoted = true; rowTouched = true;
+    } else if (c === delim) { row.push(cell); cell = ''; afterQuote = false; rowTouched = true; }
+    else if (c === '\n' || c === '\r') { if (c === '\r' && text[i + 1] === '\n') i++; if (rowTouched || cell.length || row.length || afterQuote) { row.push(cell); out.push(row); } row = []; cell = ''; afterQuote = false; rowTouched = false; }
+    else { cell += c; rowTouched = true; }
   }
-  if (cell.length || row.length) { row.push(cell); out.push(row); }
-  while (out.length && out[out.length - 1].every(v => v === '')) out.pop();
+  if (quoted) throw new Error(`Malformed CSV: quoted field is not closed (character ${text.length + 1}).`);
+  if (cell.length || row.length || afterQuote || rowTouched) { row.push(cell); out.push(row); }
   return out;
 }
 
 export function detectDelimiter(text) {
-  const sample = text.split(/\r?\n/, 12).filter(Boolean).join('\n');
+  let quoted = false, records = 0, end = text.length;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (c === '"') {
+      if (quoted && text[i + 1] === '"') i++;
+      else quoted = !quoted;
+    } else if (!quoted && (c === '\n' || c === '\r')) {
+      records++;
+      if (c === '\r' && text[i + 1] === '\n') i++;
+      if (records === 12) { end = i + 1; break; }
+    }
+  }
+  const sample = text.slice(0, end);
   const candidates = [',',';','\t','|'].map(delim => {
-    const widths = parseCSV(sample, delim).filter(row => row.some(cell => cell !== '')).map(row => row.length);
+    let parsed;
+    try { parsed = parseCSV(sample, delim); } catch { parsed = []; }
+    const widths = parsed.filter(row => row.some(cell => cell !== '')).map(row => row.length);
     const frequencies = new Map(); for (const width of widths) frequencies.set(width, (frequencies.get(width) || 0) + 1);
     const mode = Math.max(0, ...frequencies.values());
     const mean = widths.length ? widths.reduce((sum, width) => sum + width, 0) / widths.length : 0;

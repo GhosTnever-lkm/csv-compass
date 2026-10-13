@@ -14,6 +14,7 @@ Spreadsheet cleanup often means handing sensitive data to an online converter. C
 
 - Inspect row and column counts, blank cells, and duplicate rows.
 - Open comma, semicolon, tab, and pipe separated text files, including quoted delimiters and multiline fields.
+- Reject malformed quotes with a clear error instead of silently accepting a potentially altered table; delimiter detection samples complete records, including quoted multiline fields.
 - Search all cells in the visible table preview.
 - Trim leading and trailing whitespace and collapse repeated spaces.
 - Remove duplicate records with one-step undo.
@@ -62,7 +63,7 @@ The `main` branch deploys automatically to GitHub Pages through the workflow in 
 
 ## Release history
 
-See [CHANGELOG.md](CHANGELOG.md). The current version is **0.1.0**.
+See [CHANGELOG.md](CHANGELOG.md). The current version is **0.1.1**.
 
 ## ☕ Support / Pro Version
 
