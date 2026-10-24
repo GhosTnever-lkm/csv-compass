@@ -1,6 +1,15 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { parseCSV, detectDelimiter, encodeCell } from './csv-core.js';
+import { parseCSV, detectDelimiter, encodeCell, decodeCSV } from './csv-core.js';
+
+test('decodes UTF-8 CSV and removes a leading byte-order mark', () => {
+  const bytes = new TextEncoder().encode('\uFEFFname,value\nA,1');
+  assert.equal(decodeCSV(bytes), 'name,value\nA,1');
+});
+
+test('rejects invalid UTF-8 rather than replacing bytes in imported data', () => {
+  assert.throws(() => decodeCSV(Uint8Array.from([0x6e, 0x61, 0x6d, 0x65, 0x2c, 0xff])), /not valid UTF-8 text/);
+});
 
 test('parses delimiters, escaped quotes and embedded newlines', () => {
   const csv = 'name,note\r\nAlice,"said ""hello"", then left"\r\nBob,"line one\nline two"';
