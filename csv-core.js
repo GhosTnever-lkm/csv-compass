@@ -23,6 +23,15 @@ export function parseCSV(text, delim) {
   return out;
 }
 
+export function decodeCSV(bytes) {
+  try {
+    return new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+  } catch (error) {
+    if (error instanceof TypeError) throw new Error('File is not valid UTF-8 text.');
+    throw error;
+  }
+}
+
 export function detectDelimiter(text) {
   let quoted = false, records = 0, end = text.length;
   for (let i = 0; i < text.length; i++) {

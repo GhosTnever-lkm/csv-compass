@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.2 — 2026-10-25
+
+- Reject malformed UTF-8 imports with a clear error instead of silently replacing invalid bytes.
+
 ## 0.1.1 — 2026-10-13
 
 - Reject malformed quoted CSV fields with a clear character position instead of silently returning altered data.
