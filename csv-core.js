@@ -32,6 +32,22 @@ export function decodeCSV(bytes) {
   }
 }
 
+export function normalizeTable(records) {
+  if (!records.length) return { headers: [], rows: [] };
+  let columnCount = 0;
+  for (const record of records) columnCount = Math.max(columnCount, record.length);
+  const headers = Array.from({ length: columnCount }, (_, i) => {
+    const value = String(records[0][i] ?? '').trim();
+    return value || `Column ${i + 1}`;
+  });
+  const rows = [];
+  for (let rowIndex = 1; rowIndex < records.length; rowIndex++) {
+    const record = records[rowIndex];
+    rows.push(Array.from({ length: columnCount }, (_, i) => record[i] ?? ''));
+  }
+  return { headers, rows };
+}
+
 export function detectDelimiter(text) {
   let quoted = false, records = 0, end = text.length;
   for (let i = 0; i < text.length; i++) {

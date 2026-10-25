@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.3 — 2026-10-25
+
+- Preserve cells in rows wider than the first header row by creating generated columns instead of silently discarding values.
+- Pad shorter records to the table width with empty cells.
+
 ## 0.1.2 — 2026-10-25
 
 - Reject malformed UTF-8 imports with a clear error instead of silently replacing invalid bytes.
