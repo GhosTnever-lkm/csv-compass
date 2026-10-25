@@ -1,0 +1,53 @@
+name: Release CSV Compass
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - name: Check app and CSV core
+        run: |
+          node --check app.js
+          node --check csv-core.js
+          node --test csv-core.test.mjs
+      - name: Validate tag and prepare release notes
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          python - <<'PY'
+          import os
+          import re
+          from pathlib import Path
+
+          tag = os.environ["RELEASE_TAG"]
+          if not re.fullmatch(r"v\d+\.\d+\.\d+", tag):
+              raise SystemExit(f"Release tag must use vMAJOR.MINOR.PATCH: {tag}")
+          version = tag[1:]
+          readme = Path("README.md").read_text(encoding="utf-8")
+          if f"current version is **{version}**" not in readme:
+              raise SystemExit(f"README version does not match {tag}")
+          changelog = Path("CHANGELOG.md").read_text(encoding="utf-8")
+          heading = re.search(rf"(?m)^## {re.escape(version)}[^\r\n]*\b\d{{4}}-\d{{2}}-\d{{2}}\s*$", changelog)
+          if not heading:
+              raise SystemExit(f"CHANGELOG.md has no dated section for {tag}")
+          following = re.search(r"(?m)^## ", changelog[heading.end():])
+          end = heading.end() + following.start() if following else len(changelog)
+          notes = changelog[heading.end():end].strip()
+          if not notes:
+              raise SystemExit(f"CHANGELOG.md section for {tag} is empty")
+          Path("release-notes.md").write_text(notes + "\n", encoding="utf-8")
+          PY
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" --title "CSV Compass $GITHUB_REF_NAME" --notes-file release-notes.md
